@@ -1,75 +1,44 @@
-
-import {
-  createStyles,
-  fade,
-  Theme,
-  ThemeProvider,
-  withStyles,
-  makeStyles,
-  createMuiTheme,
-} from '@material-ui/core/styles';
-import SaveIcon from '@material-ui/icons/Save';
-import { Container } from '@material-ui/core';
-import Table from "./components/table"
-import AddCircleOutlineSharpIcon from '@material-ui/icons/AddCircleOutlineSharp';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-
-import './App.scss';
-
-const ValidationTextField = withStyles({
-  root: {
-    '& input:valid + fieldset': {
-      borderColor: 'green',
-      borderWidth: 2,
-    },
-    // '& input:invalid + fieldset': {
-    //   borderColor: 'red',
-    //   borderWidth: 2,
-    // },
-    '& input:valid:focus + fieldset': {
-      borderLeftWidth: 6,
-      padding: '4px !important', // override inline-style
-    },
-  },
-})(TextField);
+import { useObserver } from "mobx-react-lite";
+import { useRootStore } from "./root-store/RootStateContext";
+import Header from "./components/header";
+import ModalComponent from "./modules/modal";
+import AddUserForm from "./modules/add-user-form";
 
 function App() {
-  return (
+
+  const { notesStore, popup } = useRootStore()
+
+  const closePopup = () => {
+    popup.togllePopup(false)
+  }
+
+  const openPopup = () => {
+    popup.togllePopup(true)
+  }
+
+  return useObserver(() => (
     <div className="App">
-      <Container>
-        <h1>Add new User</h1>
-        <button>
-          <AddCircleOutlineSharpIcon/>
-        </button>
+      <h1>Hello world!!!</h1>
 
-        <Table/>
+      <h2>{notesStore.counter}</h2>
+      <button onClick={notesStore.incremented}>+1</button>
+      <button onClick={notesStore.decremented}>-1</button>
 
-        <form 
-        // className={classes.root}
-         noValidate autoComplete="off">
-          <ValidationTextField
-            // className={classes.margin}
-            label="CSS validation style"
-            required
-            variant="outlined"
-            defaultValue=""
-            id="validation-outlined-input"
+      <h3>{popup.condition ? 'Yes' : 'No'}</h3>
 
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            // className={classes.button}
-            startIcon={<SaveIcon />}
-          >
-            Save
-          </Button>
-        </form>
-      </Container>
+      <button onClick={openPopup}>true</button>
+      <button onClick={closePopup}>false</button>
+
+      <div>
+        <Header />
+
+        <ModalComponent open={popup.condition} handleClose={popup.togllePopup}>
+          <AddUserForm/>
+        </ModalComponent>
+      </div>
+
     </div>
-  );
+  ));
 }
 
 export default App;
